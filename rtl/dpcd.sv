@@ -7,6 +7,9 @@ module dpcd #(
     output logic                            clk_out
 );
 
+// Sanity check for input parameter validation
+if (DIV_CTRL_SIZE_P < 3) $fatal("dpcd module must be instanciated with DIV_CTRL_SIZE_P >= 3");
+
 /*
 The necessary number of delay states corresponds to
 the number of possible values of div_ctrl : 2**DIV_CTRL_SIZE_P
@@ -36,12 +39,14 @@ logic                                       negedge_delay_reg;          // used 
 assign rst =  ~rst_n;
 assign clk_src_n =  ~clk_src;
 
-// Register the control input
-// clocked on the OUTPUT clock to avoid glitch
-// A remapping between input control and div_ctrl_reg is necessary
-// bit[0] make the switch between even and odd division factor
-// bit[1] can only be used for division by 2 or 3 and not for anything else
-// thus shifting the value of div_ctrl from one bit
+/*
+Register the control input
+clocked on the OUTPUT clock to avoid glitch
+A remapping between input control and div_ctrl_reg is necessary
+bit[0] make the switch between even and odd division factor
+bit[1] can only be used for division by 2 or 3 and not for anything else
+thus shifting the value of div_ctrl from one bit
+*/
 always_ff @(posedge clk_divided or negedge rst_n) begin
     if (!rst_n) begin
         div_ctrl_reg <= 'h0;
