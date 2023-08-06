@@ -60,21 +60,24 @@ async def divider_test(dut, divider=2):
 @cocotb.test()
 async def random_divider_test(dut, iteration=10):
     """Create multiple tests with a random value for the division factor"""
+    max_divider_value = 2**int(dut.DIV_CTRL_SIZE_P.value) - 1;
     for iter in range(iteration):
-        divider = random.randint(0,15)
+        divider = random.randint(0,max_divider_value)
         await divider_test(dut, divider)
 
 @cocotb.test()
 async def edge_case_test(dut):
-    """Check the edge case for division : 0,1 and 15"""
+    """Check the edge case for division : 0,1 and the maxium division factor"""
+    max_divider_value = 2**int(dut.DIV_CTRL_SIZE_P.value) - 1;
     await divider_test(dut, 0)
     await divider_test(dut, 1)
-    await divider_test(dut, 15)
+    await divider_test(dut, max_divider_value)
 
 @cocotb.test()
 async def complete_divider_test(dut):
     """Create multiple tests with a random value for the division factor"""
-    for divider in range(0,16):
+    max_divider_value = 2**int(dut.DIV_CTRL_SIZE_P.value) - 1;
+    for divider in range(0,max_divider_value + 1):
          ## Make sure the clock period is 1ns
         await dut_setup(dut,1)
         ## Setup the divider value
